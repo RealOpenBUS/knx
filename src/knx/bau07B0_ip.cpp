@@ -56,7 +56,7 @@ Bau07B0IP::Bau07B0IP(Platform& platform)
     _cemiServerObject.writeProperty(PID_COMM_MODES_SUPPORTED, 1, (uint8_t*)&suppCommModes, count); // Bit 0 = "LinkLayer supported"
 
     _ipTunnelServer.setKnxBusState(&_tpLayer); // CONNECTIONSTATE reports the TP side
-#ifdef OPENKNX_HW_BUSMON
+#ifdef OPENBUS_HW_BUSMON
     // Let a KNX-Busmonitor tunnel put the TP chip into HW monitor mode.
     _ipTunnelServer.setHwBusMonitorDll(&_tpLayer);
 #endif
@@ -231,7 +231,7 @@ IpDataLinkLayer* Bau07B0IP::getPrimaryDataLinkLayer() {
     return (IpDataLinkLayer*)&_ipLayer;
 }
 
-#ifdef OPENKNX_FTC_CLIENT
+#ifdef OPENBUS_FTC_CLIENT
 uint16_t Bau07B0IP::ftcTxQueueSize() {
     return (uint16_t)_tpLayer.getTPUart().getTransmitter().queueSize();
 }

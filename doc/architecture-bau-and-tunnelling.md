@@ -179,10 +179,10 @@ Re-verify each of these targets (they compile the shared code differently):
 5. **0x27B0 RF**, **0x2920 TP/RF coupler** — shared DLL, flags at defaults.
 6. **`USE_CEMI_SERVER` + USB without `KNX_TUNNELING`** — the *only* build compiling gate `:304`
    without tunnelling; `_forwardToTunnel` must remain an unconditional member or it won't compile.
-7. **Any build without `OPENKNX_HW_BUSMON`** — all HW-busmonitor code (`bau091A` bridge, `ip_tunnel_server`
+7. **Any build without `OPENBUS_HW_BUSMON`** — all HW-busmonitor code (`bau091A` bridge, `ip_tunnel_server`
    members, `tpuart_data_link_layer` `IHwBusMonitorDll` base + forwarding, `L_busmon_ind=0x2B`) must
    stay compiled out; confirm class layouts/vtables of `IpTunnelServer` and `TpUartDataLinkLayer` are
-   unchanged. `OPENKNX_HW_BUSMON` is defined **only** by OAM-IP-Interface.
+   unchanged. `OPENBUS_HW_BUSMON` is defined **only** by OAM-IP-Interface.
 8. **Non-Arduino / Linux** — facade instance selection is inside `ARDUINO_ARCH_*` guards; verify the
    mask-based `config.h`/`bau07B0` guards still pick the right BAU.
 

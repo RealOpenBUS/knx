@@ -318,8 +318,8 @@
 #if defined(KNX_TUNNELING) && (MASK_VERSION == 0x57B0)
     #error "MASK_VERSION 0x57B0 with KNX_TUNNELING has no BAU: the facade selects Bau57B0, which cannot serve a tunnel"
 #endif
-#if defined(OPENKNX_HW_BUSMON) && !defined(KNX_TUNNELING)
-    #error "OPENKNX_HW_BUSMON needs KNX_TUNNELING: the busmonitor is served over a KNXnet/IP tunnelling connection, and both the forward path and the connect handler are compiled only with it"
+#if defined(OPENBUS_HW_BUSMON) && !defined(KNX_TUNNELING)
+    #error "OPENBUS_HW_BUSMON needs KNX_TUNNELING: the busmonitor is served over a KNXnet/IP tunnelling connection, and both the forward path and the connect handler are compiled only with it"
 #endif
 #if (KNX_SERVICE_FAMILY_CORE >= 2)
     #error "KNX_SERVICE_FAMILY_CORE >= 2 (Core v2 / extended search) does not build: knx_ip_search_response_extended.cpp has never been compiled on any mask -- see finding 4.5 before raising it"

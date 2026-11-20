@@ -178,7 +178,7 @@ void Memory::readMemory()
             return;
         }
 #if MASK_VERSION != 0x091A
-        // Checked, but from an older ETS application: unloaded. With the OpenKNX version check the stored
+        // Checked, but from an older ETS application: unloaded. With the OpenBUS version check the stored
         // hardware type still names the old application, so the next start skips the tables altogether.
         if (versionCheck == FlashTablesInvalid)
             for (int i = 0; i < _tableObjCount; i++)

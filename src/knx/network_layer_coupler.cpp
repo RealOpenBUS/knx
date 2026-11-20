@@ -283,7 +283,7 @@ void NetworkLayerCoupler::sendMsgHopCount(AckType ack, AddressType addrType, uin
     NPDU& npdu = outFrame.npdu();
 
     uint8_t interfaceIndex = (sourceInterfaceIndex == kSecondaryIfIndex) ? kPrimaryIfIndex : kSecondaryIfIndex;
-#ifdef OPENKNX_ROUTE_TRACE
+#ifdef OPENBUS_ROUTE_TRACE
     // Read before the decrement below, otherwise a forwarded telegram would be recorded one hop short
     // and a loop would not line up as 6,5,4...0 in the list.
     const uint8_t hopIn = npdu.hopCount();
@@ -324,7 +324,7 @@ void NetworkLayerCoupler::sendMsgHopCount(AckType ack, AddressType addrType, uin
                     _counters->incrementFilteredToIp();
                 else
                     _counters->incrementFilteredToKnx();
-#ifdef OPENKNX_ROUTE_TRACE
+#ifdef OPENBUS_ROUTE_TRACE
                 _trace.record(RouteTrace::FILTERED, traceToIp, traceGroup, hopIn, source, destination);
 #endif
             }
@@ -362,7 +362,7 @@ void NetworkLayerCoupler::sendMsgHopCount(AckType ack, AddressType addrType, uin
                     _counters->incrementHopCountToIp();
                 else
                     _counters->incrementHopCountToKnx();
-#ifdef OPENKNX_ROUTE_TRACE
+#ifdef OPENBUS_ROUTE_TRACE
                 _trace.record(RouteTrace::HOPCOUNT, traceToIp, traceGroup, 0, source, destination);
 #endif
             }
@@ -398,7 +398,7 @@ void NetworkLayerCoupler::sendMsgHopCount(AckType ack, AddressType addrType, uin
             _counters->incrementRoutedToIp();
         else
             _counters->incrementRoutedToKnx();
-#ifdef OPENKNX_ROUTE_TRACE
+#ifdef OPENBUS_ROUTE_TRACE
         _trace.record(RouteTrace::ROUTED, traceToIp, traceGroup, hopIn, source, destination);
 #endif
     }
@@ -503,7 +503,7 @@ void NetworkLayerCoupler::routeDataIndividual(AckType ack, uint16_t destination,
             else
                 _counters->incrementFilteredToKnx();
         }
-#ifdef OPENKNX_ROUTE_TRACE
+#ifdef OPENBUS_ROUTE_TRACE
         _trace.record(RouteTrace::PHYS_LOCKED, srcIfIndex == kSecondaryIfIndex, false,
                                            npdu.hopCount(), source, destination);
 #endif
@@ -535,7 +535,7 @@ void NetworkLayerCoupler::routeDataIndividual(AckType ack, uint16_t destination,
                 else
                     _counters->incrementFilteredToKnx();
             }
-#ifdef OPENKNX_ROUTE_TRACE
+#ifdef OPENBUS_ROUTE_TRACE
             _trace.record(RouteTrace::PHYS_NOT_ROUTED, srcIfIndex == kSecondaryIfIndex, false,
                                                npdu.hopCount(), source, destination);
 #endif

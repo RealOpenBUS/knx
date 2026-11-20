@@ -2,7 +2,7 @@
 #include <knx.h>
 #include "TPUart/Interface/ArduinoSerial.h"
 
-// The two OpenKNX KNXnet/IP products select their BAU from a mask PLUS KNX_TUNNELING:
+// The two OpenBUS KNXnet/IP products select their BAU from a mask PLUS KNX_TUNNELING:
 //   0x07B0 + KNX_TUNNELING -> Bau07B0IP, the IP-Interface
 //   0x091A + KNX_TUNNELING -> Bau091A,   the IP-Router
 // Neither combination was compiled by any example, although both pull the tunnel server, the IP

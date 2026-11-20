@@ -633,7 +633,7 @@ void ApplicationLayer::restartResponse(AckType ack, Priority priority, HopCountT
     individualSend(ack, hopType, priority, asap, apdu, secCtrl);
 }
 
-#ifdef OPENKNX_FTC_CLIENT
+#ifdef OPENBUS_FTC_CLIENT
 void ApplicationLayer::ftcDeviceDescriptorReadConnected(const SecurityControl& secCtrl)
 {
     // Modeled on restartRequest(): send to _connectedTsap so individualSend() goes connection-oriented
@@ -828,7 +828,7 @@ void ApplicationLayer::functionPropertyStateResponse(AckType ack, Priority prior
     individualSend(ack, hopType, priority, asap, apdu, secCtrl);
 }
 
-#ifdef OPENKNX_FTC_CLIENT
+#ifdef OPENBUS_FTC_CLIENT
 
 void ApplicationLayer::functionPropertyCommandRequest(AckType ack, Priority priority, HopCountType hopType, uint16_t asap, const SecurityControl& secCtrl,
                                                       uint8_t objectIndex, uint8_t propertyId, uint8_t* data, uint8_t length)
@@ -1354,7 +1354,7 @@ void ApplicationLayer::individualIndication(HopCountType hopType, Priority prior
             _bau.functionPropertyStateIndication(priority, hopType, tsap, secCtrl, data[1], data[2], &data[3], apdu.length() - 3);
             break;
 
-#ifdef OPENKNX_FTC_CLIENT // Answer to our own functionPropertyCommandRequest(). Without: switch silently drops it -- we would send and never hear the reply.
+#ifdef OPENBUS_FTC_CLIENT // Answer to our own functionPropertyCommandRequest(). Without: switch silently drops it -- we would send and never hear the reply.
         case FunctionPropertyStateResponse:
             if (apdu.length() >= 3)
                 _bau.functionPropertyStateResponseIndication(priority, hopType, tsap, secCtrl, data[1], data[2], &data[3], apdu.length() - 3);

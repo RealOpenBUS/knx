@@ -33,7 +33,7 @@ class Bau091A : public BauSystemBCoupler, public ITpUartCallBacks, public DataLi
     /** @brief Router object, for reading the filter table in diagnostics. */
     RouterObject& getRouterObject() { return _routerObj; }
 
-#ifdef OPENKNX_ROUTE_TRACE
+#ifdef OPENBUS_ROUTE_TRACE
     /** @brief Routing decisions of the coupler network layer. */
     RouteTrace& getRouteTrace() { return _netLayer.routeTrace(); }
 #endif
@@ -44,7 +44,7 @@ class Bau091A : public BauSystemBCoupler, public ITpUartCallBacks, public DataLi
 #ifdef KNX_TUNNELING
     IpTunnelServer& getIpTunnelServer() { return _ipTunnelServer; }
 #endif
-#ifdef OPENKNX_FTC_CLIENT
+#ifdef OPENBUS_FTC_CLIENT
     // FTC fast-transfer flow control: read the TP transmit FIFO depth off the secondary (TP) link.
     uint16_t ftcTxQueueSize() override;
 #endif

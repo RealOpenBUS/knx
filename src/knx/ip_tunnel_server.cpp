@@ -17,7 +17,7 @@
 #include "knx_ip_tunneling_request.h"
 #include "knx_ip_tunnel_connection.h" // KNX_TUNNEL_RESEND_DEPTH for TUNNEL_QUEUE_DEPTH below
 
-#if defined(OPENKNX_HW_BUSMON) || defined(KNX_TUNNEL_RESEND)
+#if defined(OPENBUS_HW_BUSMON) || defined(KNX_TUNNEL_RESEND)
 #include <string.h>
 #endif
 #ifdef KNX_TUNNEL_SPILL
@@ -187,7 +187,7 @@ uint8_t IpTunnelServer::activeTunnels(TunnelEvent* out, uint8_t maxOut) const
         if (readChannelId(tunnels[i].ChannelId) != ch) continue; // torn: teardown ran during the copy
         n++;
     }
-#ifdef OPENKNX_HW_BUSMON
+#ifdef OPENBUS_HW_BUSMON
     for (uint8_t bm = 0; bm < KNX_BUSMON_CONNECTIONS && n < maxOut; bm++)
     {
         const uint8_t bmCh = readChannelId(_busMonTunnel[bm].ChannelId);
@@ -393,7 +393,7 @@ void IpTunnelServer::loop()
     _cemiServer.cemiTransportMode(devMgmtOpen);
 #endif
 
-#ifdef OPENKNX_HW_BUSMON
+#ifdef OPENBUS_HW_BUSMON
     // Busmon self-heal safety-net: if ETS vanishes, the heartbeat times out -> leave monitor mode so
     // routing is never permanently stuck off (plan 5b.3).
     for (uint8_t bm = 0; bm < KNX_BUSMON_CONNECTIONS; bm++)
@@ -752,7 +752,7 @@ bool IpTunnelServer::closeTunnel(uint8_t channelId, uint8_t reason, bool* sent)
         tunnels[i].Reset();
         return true;
     }
-#ifdef OPENKNX_HW_BUSMON
+#ifdef OPENBUS_HW_BUSMON
     const int bmIdx = busMonSlotByChannel(channelId);
     if (bmIdx >= 0)
     {
@@ -784,7 +784,7 @@ uint8_t IpTunnelServer::closeAllTunnels(uint8_t reason, bool withBusMon, uint8_t
         tunnels[i].Reset();
         closed++;
     }
-#ifdef OPENKNX_HW_BUSMON
+#ifdef OPENBUS_HW_BUSMON
     if (withBusMon)
     {
         for (uint8_t bm = 0; bm < KNX_BUSMON_CONNECTIONS; bm++)
@@ -1276,7 +1276,7 @@ bool IpTunnelServer::shutdownOnProtocolVersionChange(uint8_t* buffer, uint16_t l
         return closeTunnel(channelId, END_VERSION);
     }
 
-#ifdef OPENKNX_HW_BUSMON
+#ifdef OPENBUS_HW_BUSMON
     const int bmIdx = busMonSlotByChannel(channelId);
     if (bmIdx >= 0)
     {
@@ -1481,7 +1481,7 @@ void IpTunnelServer::HandleConnectRequest(uint8_t* buffer, uint16_t length, uint
 
     if (connRequest.cri().type() == TUNNEL_CONNECTION && connRequest.cri().layer() != 0x02) // LinkLayer
     {
-#ifdef OPENKNX_HW_BUSMON
+#ifdef OPENBUS_HW_BUSMON
         // KNX Busmonitor tunnelling layer (0x80): put the TP chip into real HW monitor mode.
         // NOTE (KNX 03_08_04 Tunnelling §2.2.4 p.8): busmonitor is not conformant on a routing device; this is a
         // build-flag opt-in and routing is physically paused (chip passive) for the busmon session only.
@@ -1503,7 +1503,7 @@ void IpTunnelServer::HandleConnectRequest(uint8_t* buffer, uint16_t length, uint
         return;
     }
 
-#ifdef OPENKNX_HW_BUSMON
+#ifdef OPENBUS_HW_BUSMON
     // While the HW busmonitor is active the TP chip is passive (bus TX paused): a link-layer tunnel would
     // connect but every telegram it sends would be silently dropped -> ETS times out with a meaningless
     // error. Reject up front with the transient "no capacity" code E_NO_MORE_CONNECTIONS (KNX 03_08_02 Core
@@ -1894,7 +1894,7 @@ void IpTunnelServer::HandleConnectRequest(uint8_t* buffer, uint16_t length, uint
         for (int x = 0; x < KNX_TUNNELING + KNX_TUNNELING_DEVMGMT; x++)
             if (tunnels[x].ChannelId == _lastChannelId)
                 channelIdInUse = true;
-#ifdef OPENKNX_HW_BUSMON
+#ifdef OPENBUS_HW_BUSMON
         // The busmon connection's id lives in _busMonTunnel, outside tunnels[] -> include it so a wrapped
         // _lastChannelId can never collide with an active busmon channel (03_08_02 Core §5.3.3 uniqueness).
         if (busMonSlotByChannel(_lastChannelId) >= 0)
@@ -2000,7 +2000,7 @@ void IpTunnelServer::HandleConnectionStateRequest(uint8_t* buffer, uint16_t leng
         }
     }
 
-#ifdef OPENKNX_HW_BUSMON
+#ifdef OPENBUS_HW_BUSMON
     if (tun == nullptr)
     {
         const int bmIdx = busMonSlotByChannel(stateRequest.channelId());
@@ -2073,7 +2073,7 @@ void IpTunnelServer::HandleDisconnectRequest(uint8_t* buffer, uint16_t length, u
         }
     }
 
-#ifdef OPENKNX_HW_BUSMON
+#ifdef OPENBUS_HW_BUSMON
     const int bmDisc = (tun == nullptr) ? busMonSlotByChannel(discReq.channelId()) : -1;
     if (bmDisc >= 0)
     {
@@ -2322,7 +2322,7 @@ void IpTunnelServer::HandleTunnelingRequest(uint8_t* buffer, uint16_t length, ui
     _cemiServer.frameReceived(tunnReq.frame(), tun->ChannelId);
 }
 
-#ifdef OPENKNX_HW_BUSMON
+#ifdef OPENBUS_HW_BUSMON
 void IpTunnelServer::closeTunnelsForBusmon()
 {
     // Disconnect every open data/config tunnel and record it as ended-by-busmon. withBusMon=false keeps

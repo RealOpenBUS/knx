@@ -20,7 +20,7 @@ CemiServerObject::CemiServerObject()
         // Defaults; each BAU overrides via maxApduLength(). Read-only: writable would persist them.
         new DataProperty( PID_MAX_INTERFACE_APDU_LENGTH, false, PDT_UNSIGNED_INT, 1, ReadLv3 | WriteLv0, (uint16_t)MAX_APDU_OCTET_COUNT),
         new DataProperty( PID_MAX_LOCAL_APDU_LENGTH, false, PDT_UNSIGNED_INT, 1, ReadLv3 | WriteLv0, (uint16_t)MAX_APDU_OCTET_COUNT),
-#ifdef OPENKNX_HW_BUSMON
+#ifdef OPENBUS_HW_BUSMON
         // PID_ADD_INFO_TYPES (03_05_01 §4.7.4, p.112): array of the additional-info types this cEMI server
         // sends to the client. Our busmon L_Busmon.ind carries 0x03 (bus monitor status) + 0x06 (extended
         // relative timestamp), so declare both. maxElements=2, filled after initializeProperties() below.
@@ -36,7 +36,7 @@ CemiServerObject::CemiServerObject()
     };
     initializeProperties(sizeof(properties), properties);
 
-#ifdef OPENKNX_HW_BUSMON
+#ifdef OPENBUS_HW_BUSMON
     // Fill the (empty-constructed) supported-AI-types array: {0x03 bus monitor status, 0x06 ext timestamp}.
     const uint8_t supportedAiTypes[2] = {0x03, 0x06};
     property(PID_ADD_INFO_TYPES)->write((uint16_t)1, (uint8_t)2, supportedAiTypes);

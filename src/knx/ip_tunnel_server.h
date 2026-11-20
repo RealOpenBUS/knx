@@ -35,7 +35,7 @@ class IKnxBusState
     virtual bool knxBusOperational() = 0; // link alive, chip answering, bus voltage present; true in busmonitor
 };
 
-#ifdef OPENKNX_HW_BUSMON
+#ifdef OPENBUS_HW_BUSMON
 // KNX_BUSMON_CONNECTIONS is defined in config.h. Deliberately NO fallback here: the value sizes a member
 // array, so a second definition that ever diverged would change sizeof(IpTunnelServer) between translation
 // units. A build that bypasses config.h (NO_KNX_CONFIG) must supply it.
@@ -232,7 +232,7 @@ class IpTunnelServer
     /** @brief Register the KNX-side bus state answered in CONNECTIONSTATE_RESPONSE (every product). */
     void setKnxBusState(IKnxBusState* state) { _knxBusState = state; }
 
-#ifdef OPENKNX_HW_BUSMON
+#ifdef OPENBUS_HW_BUSMON
     /** @brief Register the TP DLL bridge used to enter/leave HW busmonitor mode (router BAU only). */
     void setHwBusMonitorDll(IHwBusMonitorDll* dll) { _hwBusMon = dll; }
     /** @brief True while at least one KNX-Busmonitor tunnel is open (chip in HW monitor mode). */
@@ -371,7 +371,7 @@ class IpTunnelServer
     CemiServer& _cemiServer;
     IKnxBusState* _knxBusState = nullptr; // E_KNX_CONNECTION source; null = bus state unknown, answered as usable
 
-#ifdef OPENKNX_HW_BUSMON
+#ifdef OPENBUS_HW_BUSMON
     void HandleBusMonitorConnect(KnxIpConnectRequest& connRequest, uint32_t src_addr, uint16_t src_port);
     void busMonitorTeardown(uint8_t slot, uint8_t reason = END_CLOSED);
     int busMonSlotByChannel(uint8_t channelId);  // index of the busmon slot holding channelId, -1 if none

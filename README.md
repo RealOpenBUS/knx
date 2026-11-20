@@ -1,6 +1,6 @@
 # knx
 
-This is a fork of the [thelsing/knx](https://github.com/thelsing/knx) stack from [Thomas Kunze](https://github.com/thelsing) for and by the [OpenKNX Team](https://github.com/OpenKNX).
+This is a fork of the [thelsing/knx](https://github.com/thelsing/knx) stack from [Thomas Kunze](https://github.com/thelsing) for and by the [OpenBUS Team](https://github.com/RealOpenBUS).
 
 This projects provides a knx-device stack for arduino (ESP32 and RP2040).
 It implements most of System-B specification and can be configured with ETS.
@@ -39,7 +39,7 @@ The stack is organized as a classic KNX layer stack. A telegram travels top-down
 send and bottom-up on receive:
 
 ```
-        Application code (sketch / OpenKNX modules)
+        Application code (sketch / OpenBUS modules)
                         |
                     knx_facade.h            <- KnxFacade<Platform, Bau> "knx" global; knx.loop()
                         |  knx.loop() -> _bau.loop()
@@ -188,3 +188,7 @@ SEARCH/DESCRIPTION responses (used e.g. as `serviceVersion(...)`).
 | `KNX_NO_DEFAULT_UART` | unset by default (`config.h:77`) | Arduino platforms: do not allocate the default UART; the UART must be provided via `ArduinoPlatform::knxUart`. Avoids RX/TX buffer allocation for unused serial lines. |
 | `KNX_NO_STRTOx_CONVERSION` | unset by default (`config.h:70`) | Skips `KNXValue(const char*)` → numeric conversion (avoids the expensive `strtod`) in `knx_value.cpp`. |
 | `NO_KNX_CONFIG` | unset by default (`config.h:3`) | Skips the whole default `config.h` body so the project can supply every define itself. |
+
+---
+
+This repository is derived from the OpenKNX project. Credits to all OpenKNX contributors.

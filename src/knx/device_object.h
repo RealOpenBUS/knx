@@ -5,7 +5,7 @@
 #define LEN_HARDWARE_TYPE 6
 #define LEN_ORDER_INFO 10
 #define LEN_PRODUCT_ID 10
-// PID_MFR_STRUCT_INFO: "OpenKNX", layout version of the manufacturer specific Properties, bit per present PID
+// PID_MFR_STRUCT_INFO: "OpenBUS", layout version of the manufacturer specific Properties, bit per present PID
 // (bit n = PID 202 + n). 9 octets is the most a single-element read fits into an L_Data_Standard Frame.
 #define LEN_MFR_STRUCT_INFO 9
 #define MFR_STRUCT_VERSION 1

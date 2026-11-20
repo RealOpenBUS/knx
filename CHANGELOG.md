@@ -130,7 +130,7 @@ ESP32; the known limits are listed at the end of this batch.
 
 ### Housekeeping
 
-* Change: the `OPENKNX_CON_DIAG` con counters are removed, four unused duplicate defines are dropped, and the Supported Service Families DIB length is derived in one header
+* Change: the `OPENBUS_CON_DIAG` con counters are removed, four unused duplicate defines are dropped, and the Supported Service Families DIB length is derived in one header
 * Change: the README rows for Core, Tunnelling, Device Management and Routing name the current defaults and lines
 
 ### Stored image and interface objects (2026-10-15)
@@ -225,7 +225,7 @@ host harness with AddressSanitizer, 77 cases, red-before/green-after per fix.
   hop count 7 derived `UnlimitedRouting` from it, handed that up to the BAU and back down into the
   response, and emitted an answer that never expires. 08_03_03 clause 3.3 p.7-8 and clause 3.4 p.8
   require the answer to carry routing counter 6 whatever came in, and 03_03_03 clause 2.4.1 p.11 has the
-  sending network layer take the hop count from its own parameter. Measured on three OpenKNX devices
+  sending network layer take the hop count from its own parameter. Measured on three OpenBUS devices
   (all answered 7) against a certified MDT SCN-IP000.03 on the same line, which answered 6.
 * This applies to a coupler too: 03_03_03 clause 2.4.2.4.2 p.13 sends it down the device path for a frame
   addressed to its own individual address, so the same six receive sites changed in
@@ -357,11 +357,11 @@ host harness with AddressSanitizer, 77 cases, red-before/green-after per fix.
 * Fix: `Platform::readNonVolatileMemory` handles Callback memory, which fell through to the EEPROM buffer -- a nullptr on RP2040 without EEPROM emulation -- and the RP2040 default constructor sets the memory type, so a product that never registers flash callbacks does not run in EEPROM mode
 * Fix: the tunnelling identities and the downloaded IP configuration are cleared on a factory reset, and the properties that have a declared default go back to it rather than to zero: `PID_TTL` to 16 and the routing multicast address to 224.0.23.12, the latter under `KNX_IS_ROUTER` where the writable property is declared
 * Change: `KNX_TUNNELING_DEVMGMT`, `KNX_TUNNEL_RESEND`, `KNX_TUNNEL_RESEND_DEPTH`, `KNX_TUNNEL_RESEND_BUF`, `KNX_BUSMON_CONNECTIONS` and `KNX_CEMI_TRANSPORT_STRICT` are documented and defaulted in `config.h`. `KNX_TUNNEL_RESEND` is on by default, because 03_08_04 2.6.1 p.9 makes the repetition of an unconfirmed `TUNNELLING_REQUEST` mandatory and a tunnelling server is a sending device the moment it forwards bus traffic; `KNX_NO_TUNNEL_RESEND` opts out and is then knowingly non-conformant. The three that size member arrays must come from `config.h` with no local fallback, since a diverging second definition would change the object size between translation units
-* Change: the flag combinations that do not build are refused at compile time -- `KNX_TUNNELING` without an IP-capable mask or below 1, `OPENKNX_HW_BUSMON` or `USE_CEMI_SERVER` without it, `KNX_SERVICE_FAMILY_CORE` of 2 or more, and `KNX_TUNNELING_STRICT_TOPOLOGY` on a non-router, where it withholds every tunnelled unicast from TP. Each surfaced as a pile of unrelated errors in files that have nothing to do with the cause, or did not surface at all
+* Change: the flag combinations that do not build are refused at compile time -- `KNX_TUNNELING` without an IP-capable mask or below 1, `OPENBUS_HW_BUSMON` or `USE_CEMI_SERVER` without it, `KNX_SERVICE_FAMILY_CORE` of 2 or more, and `KNX_TUNNELING_STRICT_TOPOLOGY` on a non-router, where it withholds every tunnelled unicast from TP. Each surfaced as a pile of unrelated errors in files that have nothing to do with the cause, or did not surface at all
 * Change: the tunnelling identity log is gated behind `KNX_LOG_TUNNELING`; it ran in every `KNX_TUNNELING` build, on a path ETS walks on every download
 
 ### Build and pipeline
-* Fix: the example projects no longer name TPUart themselves. Each listed `https://github.com/OpenKNX/tpuart.git` with no ref, which resolves to the default branch and overrode the pin in `library.json`; that branch predates the `Frame` API the stack has used since `eeae877`, so `esp32dev_tp` and `rp2040` failed on `isAckOnly`, `isErrored`, `isTruncated` and `isRaw` while the IP-only environment passed. The pin decides now
+* Fix: the example projects no longer name TPUart themselves. Each listed `https://github.com/RealOpenBUS/tpuart.git` with no ref, which resolves to the default branch and overrode the pin in `library.json`; that branch predates the `Frame` API the stack has used since `eeae877`, so `esp32dev_tp` and `rp2040` failed on `isAckOnly`, `isErrored`, `isTruncated` and `isRaw` while the IP-only environment passed. The pin decides now
 * Feature: `examples/knx-demo-knxnetip` builds the two flag combinations the KNXnet/IP products select their BAU from -- `0x07B0 + KNX_TUNNELING` for the interface and `0x091A + KNX_TUNNELING` for the router -- on ESP32, RP2040 and RP2350. Neither was compiled anywhere, although both pull the tunnel server, the IP data link layer and `tpuart_data_link_layer.cpp`, which is where a drift against the pinned TPUart surfaces. Its sketch carries no application, so a failure can only mean the stack does not compile
 * The library version is `2.5.0-beta.1`
 
@@ -369,7 +369,7 @@ host harness with AddressSanitizer, 77 cases, red-before/green-after per fix.
 Memory-safety and conformance work on the management path, plus the removal of the download counter.
 Every bound below was re-derived from the response builder and the frame buffer, not from the handler
 that reads the data. Built on OAM-IP-Interface (RP2040, RP2350, ESP32), OAM-IP-Router (RP2040, ESP32)
-and OAM-RaumController (57B0).
+and OAM-RoomController (57B0).
 
 ### Reachable over the bus
 * Fix: a property that exists but is not `PDT_FUNCTION` is answered without return code and without data (03_03_07 3.4.7.3). `functionPropertyStateIndication` started with `handled = true`, so such a request was answered with `resultLength` still at its 255 initialiser: `CemiFrame(3 + 255)` truncated through the `uint8_t` parameter to `apduLength` 2 while `memcpy` wrote 255 octets from `buffer+13`, four octets past the 264-octet buffer and into the frame's own data pointer, which `sendTelegram` writes through on its next statement. Reachable with `A_FunctionPropertyState_Read` on object 0 property 1, over TP and through a tunnel, without programming mode and without authentication
@@ -414,7 +414,7 @@ client, so nearly every fix names a value or timing an ETS or a tunnel client ac
 Field-tested on OAM-IP-Interface and OAM-IP-Router (RP2040 + ESP32).
 
 ### Breaking
-* Breaking: `OPENKNX_FTC` is now `OPENKNX_FTC_CLIENT`. A product that sets the old name loses the client role silently, so rename it in the ini
+* Breaking: `OPENBUS_FTC` is now `OPENBUS_FTC_CLIENT`. A product that sets the old name loses the client role silently, so rename it in the ini
 * Change: the FunctionProperty confirm cases are handled unconditionally, no longer only under the FTC flag
 
 ### Discovery and description (a non-router must not look like a router)
@@ -445,7 +445,7 @@ Field-tested on OAM-IP-Interface and OAM-IP-Router (RP2040 + ESP32).
 
 ### cEMI and device management
 * Feature: local Transport Layer over cEMI — `T_Data_Individual` and `T_Data_Connected` message codes `0x4A`/`0x41` are served instead of dropped (AN118, 03_08_04 H-4.3.5/H-4.3.7)
-* Feature: `PID_DOWNLOAD_COUNTER` (30) on the Device Object — read-only change token, +1 per download session (armed by a read, spent by the first table load), kept in RAM so the NVM layout and apiVersion are unchanged; a product may persist it in one of its OpenKNX modules
+* Feature: `PID_DOWNLOAD_COUNTER` (30) on the Device Object — read-only change token, +1 per download session (armed by a read, spent by the first table load), kept in RAM so the NVM layout and apiVersion are unchanged; a product may persist it in one of its OpenBUS modules
 * Fix: `M_PropRead` skips the client-address patch on a `start_index == 0` count read, which returned a patched value where the count belongs
 * Fix: `M_PropWrite` guards its address patch against a request with no data
 * Fix: `M_PropRead`/`M_PropWrite` frames that are truncated are dropped instead of parsed
@@ -473,7 +473,7 @@ Field-tested on OAM-IP-Interface and OAM-IP-Router (RP2040 + ESP32).
 * Fix: the status octet carries bit-error, truncated and lost, and an rx-frame-buffer overflow counts into the lost-frame status
 * Fix: the busmon channel id stays unique against the data channels and the `L_Busmon.ind` sequence is reset on connect
 * Fix: refused tunnel connects are recorded
-* Fix: busmon-only carrier handling is gated under `OPENKNX_HW_BUSMON`
+* Fix: busmon-only carrier handling is gated under `OPENBUS_HW_BUSMON`
 
 ### Coupler
 * Fix: hop count 7 is decremented on closed-media routing (post-AN189)
@@ -489,7 +489,7 @@ Field-tested on OAM-IP-Interface and OAM-IP-Router (RP2040 + ESP32).
 * Fix: the value accessors read the matching `KNXValue` union member
 
 ### Diagnostics and portability
-* Feature: `OPENKNX_CON_DIAG` counts confirmation generation on the tunnel path (indications, acks, header drops); off by default
+* Feature: `OPENBUS_CON_DIAG` counts confirmation generation on the tunnel path (indications, acks, header drops); off by default
 * Feature: `KNX_LOG_TUNNELING` names the failing check on an invalid frame and prints property errors in readable form
 * Feature: device type, role and capabilities are decoded once per `MASK_VERSION` instead of at each call site
 * Fix: `0x07B0` plus `KNX_TUNNELING` is compile-guarded on SAMD and STM32, which have no IP platform
@@ -521,7 +521,7 @@ The additions are grouped below; the upstream v1dev entries follow.
 - Tunnel hooks for single-interface KNXnet/IP devices (TP at entity index 0): bus-RX->tunnel, own-TX->tunnel and the `KNX_TUNNELING_NO_TUNNEL_PA_ON_TP` gate work without a coupler topology; the interface can answer a tunnel client addressed to itself (self-programming).
 - `ftcPacingRate` hook for delivery-rate send pacing.
 
-### HW busmonitor (`OPENKNX_HW_BUSMON`)
+### HW busmonitor (`OPENBUS_HW_BUSMON`)
 - Real hardware busmonitor over an ETS Busmonitor tunnel (NCN passive mode); raw LPDUs wrapped as cEMI `L_Busmon.ind`, runs in parallel with the link layer, no TX/ACK while monitoring.
 - `bcu mon` local start/stop toggle with local/ETS dual-owner coordination; a local monitor closes data/config tunnels (exclusive, like ETS); ETS busmon takes over active data tunnels; console echo for `bcu mon`.
 - L2-ACK + extended timestamp transferred (03_06_03 `L_Busmon.ind` conformance); honest status octet (lost + frame-error bits); standalone L2 acknowledges and FCS-errored frames passed through raw; `busMonitorFrame` bounded vs `MAX_LPDU`.
@@ -531,7 +531,7 @@ The additions are grouped below; the upstream v1dev entries follow.
 - KNXnet/IP conformance hardening; dedup device-config requests + reject sub-spec datagrams; L_Data routing guarded on ChannelId (dead config-channel fallback dropped); first free unique IA assigned from the pool (not `addresses[slot]`); frame size computed only when the resend queue is enabled.
 - Opt-in additional-IA defence via L2-ACK (`KNX_TUNNEL_IA_DEFENCE`).
 
-### File-Transfer client (`OPENKNX_FTC_CLIENT`, formerly `OPENKNX_FTC` — the old name is gone, rename in your `ini` and `main.cpp`)
+### File-Transfer client (`OPENBUS_FTC_CLIENT`, formerly `OPENBUS_FTC` — the old name is gone, rename in your `ini` and `main.cpp`)
 - Connectionless File-Transfer client role in the stack; device diagnosis (property-write, memory-read) + connection-oriented scan (reaches old BCU1/BCU2 masks); client-side `A_ADC_Read` (remote bus-voltage); responder source-PA passed to the FunctionPropertyState callback.
 
 ### IP / DESCRIPTION_RESPONSE
@@ -582,7 +582,7 @@ The additions are grouped below; the upstream v1dev entries follow.
 
 ## v2.2.1 - 2025-08-22
 - Fix: Distinguish between tunnel and TP PAs when reading PID_ADDITIONAL_INDIVIDUAL_ADDRESSES. This resulted in a failed PA assignment for 0x091A devices with KNX_TUNNELING
-- Fix: set repeat correctly in DataLinkLayer when sending to other mediums as TP (https://github.com/OpenKNX/knx/issues/40)
+- Fix: set repeat correctly in DataLinkLayer when sending to other mediums as TP (https://github.com/RealOpenBUS/knx/issues/40)
 - Fix: `dataConReceived` is not suppressed anymore. This prevented sending device reset telegrams.
 - Fix: Update TPUart lib to 1.0.2
 - Fix: Add individual address handling in TpUartDataLinkLayer
@@ -590,11 +590,11 @@ The additions are grouped below; the upstream v1dev entries follow.
 - Extend documentation for KO-state
 
 ## V2.2.0 - 2025-07-04
-- Fix [#30](https://github.com/OpenKNX/knx/pull/30): Unexpected behaviour of `GroupObject` on failed conversion to DPT
+- Fix [#30](https://github.com/RealOpenBUS/knx/pull/30): Unexpected behaviour of `GroupObject` on failed conversion to DPT
   - `GroupObject::value[No]SendCompare(..)` resulted in value 0 (and returned change based on this value)
   - `GroupObject::valueNoSend(..)` updated state from unitialized to OK, without updating the value
   - `GroupObject::value(..)` wrote to GA without setting the KO value
-- Extension [#30](https://github.com/OpenKNX/knx/pull/30): Return successful conversion to DPT on values update operations in `GroupObject` (changed result-type of some methods from `void` to `bool`) 
+- Extension [#30](https://github.com/RealOpenBUS/knx/pull/30): Return successful conversion to DPT on values update operations in `GroupObject` (changed result-type of some methods from `void` to `bool`) 
 - only set pinMode of Prog button pin if valid (PROG_BUTTON_PIN >= 0)
 - Strings are now \0 terminated in group objects (#25)
 - change defines in the rp2040 plattform for LAN / WLAN usage to KNX_IP_LAN or KNX_IP_WIFI, remove KNX_IP_GENERIC
@@ -604,7 +604,7 @@ The additions are grouped below; the upstream v1dev entries follow.
 - add #pragma once to Arduino plattform to allow derived plattforms
 - change esp32 plattform to use KNX_NETIF
 - remove examples to deprecated plattforms, update remaining examples
-- use tpuart library (https://github.com/OpenKNX/tpuart)
+- use tpuart library (https://github.com/RealOpenBUS/tpuart)
 
 ## V2.1.2 - 2024-12-09
 - adds unicast auto ack
@@ -620,4 +620,4 @@ The additions are grouped below; the upstream v1dev entries follow.
 - added bool GroupObject::valueCompare method for only sending the value when it has changed 
 
 ## V2.0.0 - 2024-02-13
-- first OpenKNX version
+- first OpenBUS version

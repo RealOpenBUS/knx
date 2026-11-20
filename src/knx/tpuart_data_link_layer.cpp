@@ -142,7 +142,7 @@ bool TpUartDataLinkLayer::monitor()
 
     if (!_tpuart.startMonitoring())
         return false;
-#if defined(OPENKNX_HW_BUSMON) && defined(KNX_TUNNELING)
+#if defined(OPENBUS_HW_BUSMON) && defined(KNX_TUNNELING)
     // Baseline the loss counter at monitor entry so pre-existing overflows don't set a spurious "lost" bit.
     _lastBusMonRxOverflow = _tpuart.getStatistics().getRxUartOverflow()
                           + _tpuart.getStatistics().getRxSearchBufferOverflow()
@@ -170,7 +170,7 @@ void TpUartDataLinkLayer::stopConsoleMonitor()
         return;
 
     bool tunnelOn = false;
-#if defined(OPENKNX_HW_BUSMON) && defined(KNX_TUNNELING)
+#if defined(OPENBUS_HW_BUSMON) && defined(KNX_TUNNELING)
     tunnelOn = _ipTunnelServer.busMonitorActive(); // interface only: a busmon tunnel co-owns the HW monitor
 #endif
     _localBusmon = false;
@@ -206,7 +206,7 @@ void TpUartDataLinkLayer::toggleConsoleMonitor()
     }
     _localBusmon = true;
     _monitorConsoleLog = true;
-#if defined(OPENKNX_HW_BUSMON) && defined(KNX_TUNNELING)
+#if defined(OPENBUS_HW_BUSMON) && defined(KNX_TUNNELING)
     // Make the console busmon exclusive too (like a busmon tunnel connect): drop any open data/config
     // tunnels so the monitor is the only connection. In HW monitor mode the chip is passive anyway, so an
     // "active" tunnel could no longer pass traffic. No-op if none are open (e.g. a busmon tunnel co-owns it).
@@ -380,7 +380,7 @@ TPUart::AcknowledgeType TpUartDataLinkLayer::checkAcknowledge(unsigned short des
 
 void TpUartDataLinkLayer::processRxFrame(TPUart::Frame &tpFrame)
 {
-#if defined(OPENKNX_HW_BUSMON) && defined(KNX_TUNNELING)
+#if defined(OPENBUS_HW_BUSMON) && defined(KNX_TUNNELING)
     // Build the cEMI busmon status octet: bit 3 "lost" when RX overflow(s) happened since the last
     // reported frame, bit 7 "frame error" for an FCS-failed frame (03_06_03 EMI §3.3.3.2).
     // 03_06_03 4.1.5.8.1 (p.97): F(7) frame error | B(6) bit error | P(5) parity error | bit4=0 | L(3) lost
@@ -407,7 +407,7 @@ void TpUartDataLinkLayer::processRxFrame(TPUart::Frame &tpFrame)
     // buffer is shorter than size() claims. Never convert them to cEMI, on any build; only the forward is optional.
     if (tpFrame.isAckOnly() || tpFrame.isErrored() || tpFrame.isTruncated() || tpFrame.isRaw())
     {
-#if defined(OPENKNX_HW_BUSMON) && defined(KNX_TUNNELING)
+#if defined(OPENBUS_HW_BUSMON) && defined(KNX_TUNNELING)
         if (_ipTunnelServer.busMonitorActive())
         {
             // rawLength() = octets actually received; size() (what the length octet promised) would read
@@ -426,7 +426,7 @@ void TpUartDataLinkLayer::processRxFrame(TPUart::Frame &tpFrame)
         // an ETS-initiated busmon stays silent on the console.
         if (_monitorConsoleLog)
             printMessage(tpFrame.printFrame().c_str(), false);
-#if defined(OPENKNX_HW_BUSMON) && defined(KNX_TUNNELING)
+#if defined(OPENBUS_HW_BUSMON) && defined(KNX_TUNNELING)
         // Forward every raw monitor-mode frame (incl. un-ACKed frames, incl. FCS) to the ETS busmon tunnel.
         if (_ipTunnelServer.busMonitorActive())
         {

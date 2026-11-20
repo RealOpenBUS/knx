@@ -1,10 +1,10 @@
 #pragma once
 
 // Routing diagnostics for a coupler: the last decisions as a list, plus a long-running count per
-// group address. Both exist only with OPENKNX_ROUTE_TRACE, which no product but the IP router sets --
+// group address. Both exist only with OPENBUS_ROUTE_TRACE, which no product but the IP router sets --
 // without it this header defines nothing and costs no byte anywhere.
 
-#ifdef OPENKNX_ROUTE_TRACE
+#ifdef OPENBUS_ROUTE_TRACE
 
     #include <stdint.h>
     #include <string.h>
@@ -121,4 +121,4 @@ class RouteTrace
     uint8_t _count = 0;
 };
 
-#endif // OPENKNX_ROUTE_TRACE
+#endif // OPENBUS_ROUTE_TRACE

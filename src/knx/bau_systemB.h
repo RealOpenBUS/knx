@@ -37,8 +37,8 @@ class BauSystemB : protected BusAccessUnit
      *  false means a rebuild was attempted and failed; a BAU without an endpoint has nothing to fail. */
     virtual bool networkChanged(bool afterOutage) { (void)afterOutage; return true; }
 
-#ifdef OPENKNX_FTC_CLIENT
-    // OPENKNX_FTC_CLIENT: client role for KnxFileTransfer (ObjectIndex 159). Connectionless by design; the
+#ifdef OPENBUS_FTC_CLIENT
+    // OPENBUS_FTC_CLIENT: client role for KnxFileTransfer (ObjectIndex 159). Connectionless by design; the
     // reply arrives via the callback.
     bool ftcSendCommand(uint16_t asap, const SecurityControl secCtrl, uint8_t objectIndex, uint8_t propertyId, uint8_t* data, uint8_t length);
     void ftcSetResponseCallback(void (*cb)(uint16_t pa, uint8_t objectIndex, uint8_t propertyId, uint8_t* data, uint8_t length)) { _ftcResponseCb = cb; }
@@ -156,7 +156,7 @@ class BauSystemB : protected BusAccessUnit
                                            uint8_t propertyId, uint8_t* data, uint8_t length) override;
     void functionPropertyStateIndication(Priority priority, HopCountType hopType, uint16_t asap, const SecurityControl &secCtrl, uint8_t objectIndex,
                                          uint8_t propertyId, uint8_t* data, uint8_t length) override;
-#ifdef OPENKNX_FTC_CLIENT
+#ifdef OPENBUS_FTC_CLIENT
     void functionPropertyStateResponseIndication(Priority priority, HopCountType hopType, uint16_t asap, const SecurityControl &secCtrl, uint8_t objectIndex,
                                                  uint8_t propertyId, uint8_t* data, uint8_t length) override;
     // A DeviceDescriptor_Response we asked for came back (scan): hand the responder's PA + mask to the client.
@@ -241,7 +241,7 @@ class BauSystemB : protected BusAccessUnit
     uint32_t _selfResetAt = 0;
     EraseCode _selfResetErase = EraseCode::Void;
     uint8_t _selfResetChannel = 0;
-#ifdef OPENKNX_FTC_CLIENT
+#ifdef OPENBUS_FTC_CLIENT
     void (*_ftcResponseCb)(uint16_t pa, uint8_t objectIndex, uint8_t propertyId, uint8_t* data, uint8_t length) = nullptr;
     void (*_ftcDdCb)(uint16_t pa, uint8_t descriptorType, const uint8_t* data) = nullptr;
     void (*_ftcPropCb)(uint16_t pa, uint8_t objectIndex, uint8_t propertyId, const uint8_t* data, uint8_t length) = nullptr;

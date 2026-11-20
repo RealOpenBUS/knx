@@ -344,7 +344,7 @@ DeviceObject::DeviceObject()
         new DataProperty(PID_HARDWARE_TYPE, true, PDT_GENERIC_06, 1, ReadLv3 | WriteLv3, hardwareType),
         new DataProperty(PID_DEVICE_DESCRIPTOR, false, PDT_GENERIC_02, 1, ReadLv3 | WriteLv0),
         // 03_05_01 4.3.1: Properties above 201 are manufacturer specific, and other manufacturers use them too.
-        // The first one names the owner, so a reader checks "OpenKNX" here before it interprets the others.
+        // The first one names the owner, so a reader checks "OpenBUS" here before it interprets the others.
         new CallbackProperty<DeviceObject>(this, PID_MFR_STRUCT_INFO, false, PDT_GENERIC_09, 1, ReadLv3 | WriteLv0,
             [](DeviceObject* io, uint16_t start, uint8_t count, uint8_t* data) -> uint8_t
             {
@@ -361,7 +361,7 @@ DeviceObject::DeviceObject()
                     if (io->property((PropertyID)(PID_MFR_STRUCT_INFO + bit)) != nullptr)
                         present |= (uint8_t)(1 << bit);
 
-                memcpy(data, "OpenKNX", 7);
+                memcpy(data, "OpenBUS", 7);
                 data[7] = MFR_STRUCT_VERSION;
                 data[8] = present;
                 return 1;

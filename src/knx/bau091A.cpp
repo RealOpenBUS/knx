@@ -85,7 +85,7 @@ Bau091A::Bau091A(Platform& platform)
 #ifdef KNX_TUNNELING
     _ipTunnelServer.setKnxBusState(&_dlLayerSecondary); // CONNECTIONSTATE reports the TP side
 #endif
-#if defined(OPENKNX_HW_BUSMON) && defined(KNX_TUNNELING)
+#if defined(OPENBUS_HW_BUSMON) && defined(KNX_TUNNELING)
     // Bridge so a KNX-Busmonitor tunnel can put the TP secondary chip into HW monitor mode.
     _ipTunnelServer.setHwBusMonitorDll(&_dlLayerSecondary);
 #endif
@@ -360,7 +360,7 @@ TpUartDataLinkLayer* Bau091A::getSecondaryDataLinkLayer() {
     return (TpUartDataLinkLayer*)&_dlLayerSecondary;
 }
 
-#ifdef OPENKNX_FTC_CLIENT
+#ifdef OPENBUS_FTC_CLIENT
 uint16_t Bau091A::ftcTxQueueSize() {
     // Read-only depth of the TP transmit FIFO (Transmitter::queueSize() -> _queue.size()). No TX
     // logic is touched -- the fast-transfer pump uses this only to pace itself against the driver.

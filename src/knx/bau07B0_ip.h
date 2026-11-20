@@ -39,7 +39,7 @@ class Bau07B0IP : public BauSystemBDevice, public ITpUartCallBacks, public DataL
     /** @brief KNXnet/IP telegram counters (03_08_03) for diagnostics and the OAM console.
      *  Kept like the router does, but NOT exposed as properties: this device is not a routing device. */
     KnxIpCounters& getCounters() { return _counters; }
-#ifdef OPENKNX_FTC_CLIENT
+#ifdef OPENBUS_FTC_CLIENT
     // FTC fast-transfer flow control: read the TP transmit FIFO depth off the TP link.
     uint16_t ftcTxQueueSize() override;
 #endif

@@ -30,7 +30,7 @@ class TpUartDataLinkLayer : public DataLinkLayer
 #ifdef KNX_TUNNELING
                           , public IKnxBusState
 #endif
-#if defined(OPENKNX_HW_BUSMON) && defined(KNX_TUNNELING)
+#if defined(OPENBUS_HW_BUSMON) && defined(KNX_TUNNELING)
                           , public IHwBusMonitorDll
 #endif
 {
@@ -86,7 +86,7 @@ class TpUartDataLinkLayer : public DataLinkLayer
     bool isBusy();
     void resetStats();
 
-#if defined(OPENKNX_HW_BUSMON) && defined(KNX_TUNNELING)
+#if defined(OPENBUS_HW_BUSMON) && defined(KNX_TUNNELING)
     // IHwBusMonitorDll bridge: let the IP tunnel server drive the TP chip's HW monitor mode.
     // Enter: attach the ETS owner; only start the chip if not already monitoring locally, and do NOT clear
     // the console echo -- a local `bcu mon` keeps its output while ETS shares the same raw stream.
@@ -129,7 +129,7 @@ class TpUartDataLinkLayer : public DataLinkLayer
     // Local console-busmon owner (set by the `bcu mon` toggle). Keeps the HW busmon up when an ETS busmon
     // tunnel detaches, and vice-versa (dual-owner coordination). Console echo is tied to this being true.
     volatile bool _localBusmon = false;
-#if defined(OPENKNX_HW_BUSMON) && defined(KNX_TUNNELING)
+#if defined(OPENBUS_HW_BUSMON) && defined(KNX_TUNNELING)
     // Last-seen combined RX overflow count; edge-detects loss for the busmon status "lost" bit.
     uint32_t _lastBusMonRxOverflow = 0;
 #endif

@@ -18,7 +18,7 @@ unterscheidet, ist das vermerkt (siehe „Produkt-Unterschiede").
   Mask 0x091A (`knx_ip_search_response.cpp:60-67`, erweitert `knx_ip_search_response_extended.cpp:75-82`).
   Kernsatz „Interface, kein Router" — und macht den HW-Busmonitor spec-konform. *Core §7.5.4.3 S.26;
   Tunnelling §2.2.4 S.8.*
-- **Busmonitor exklusiv** (nur unter `OPENKNX_HW_BUSMON`): eine Busmon-Verbindung; ein zweiter Busmon/Tunnel
+- **Busmonitor exklusiv** (nur unter `OPENBUS_HW_BUSMON`): eine Busmon-Verbindung; ein zweiter Busmon/Tunnel
   wird abgelehnt (`E_NO_MORE_CONNECTIONS`), Device-Mgmt bleibt erlaubt (`ip_tunnel_server.cpp` `HandleBusMonitorConnect()`,
   :717-724`). *Tunnelling §2.2.4 S.8.*
 - **120-s-Server-Timeout** — Inline-Literal `120000` an zwei Stellen (`ip_tunnel_server.cpp` `loop()`, zwei Stellen;
@@ -89,7 +89,7 @@ unterscheidet, ist das vermerkt (siehe „Produkt-Unterschiede").
   bei 16 freien Tunneln).
 - **#3 M_PropWrite** — aktiv (kein Flag), siehe 🔧.
 - **DISCONNECT_RESPONSE (0x20A)** abgefangen (kein „Unhandled"-Log) (`ip_tunnel_server.cpp` `HandleIpFrame()`, `case DisconnectResponse`);
-  **Busmon-Kick** schließt laufende Tunnel bei Busmon-Start (`:1367, :1332-1350`, gated `OPENKNX_HW_BUSMON`).
+  **Busmon-Kick** schließt laufende Tunnel bei Busmon-Start (`:1367, :1332-1350`, gated `OPENBUS_HW_BUSMON`).
 - **#2 Zusatz-IA-Defense** — **COMPILED-OUT** (`KNX_TUNNEL_IA_DEFENCE` in keinem Produkt gesetzt). Der
   aktuelle, geschützte Code ist **nur ein ACK-Bit** (kein fabriziertes T_Disconnect mehr → kein
   TP-Protocol-Error; `bau07B0_ip.cpp:193-199`). Reaktivierung bei Bedarf mit HW-Test. *Tunnelling §2.2.2 S.7.*
@@ -179,7 +179,7 @@ Objektindex eines entfernten Geräts. Wer das Feature betrieblich nutzen will, b
 |---|:---:|:---:|
 | `KNX_TUNNEL_RESEND` (Tunnel-ACK-FIFO) | ✔ | ✔ |
 | `KNX_CEMI_TRANSPORT_LAYER` (0x4A/0x41 lokal) | ✔ | ✘ |
-| `OPENKNX_HW_BUSMON` (HW-Busmon + Busmon-Kick) | ✔ | ✘ |
+| `OPENBUS_HW_BUSMON` (HW-Busmon + Busmon-Kick) | ✔ | ✘ |
 | `KNX_TUNNEL_IA_DEFENCE` (Zusatz-IA-ACK) | ✘ | ✘ |
 | `KNX_IS_ROUTER` (PID 72-75, PID 66 real, Routing) | ✘ | ✔ |
 
